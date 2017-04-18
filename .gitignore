@@ -4,8 +4,3 @@ wedt.iml
 target
 lib/eduentitymine-proc_2.11-0.1-SNAPSHOT-one-jar.jar
 
-data/
-!data
-!data/pagestarge_anno/
-data/pagestarge_anno/*
-
