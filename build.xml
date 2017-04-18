@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<project name="polish-stemming" basedir="." default="compile">
+	
+	<property name="src" value="src"/>
+	<property name="lib" value="lib"/>
+
+	<property name="target" value="target"/>
+	<property name="classes" value="target/classes"/>
+
+	<path id="master-classpath">
+		<fileset dir="${lib}">
+			<include name="jsoup-1.10.2.jar"/>
+			<include name="eduentitymine-proc_2.11-0.1-SNAPSHOT-one-jar.jar"/>
+		</fileset>
+		<pathelement location="${classes}"/>
+	</path>
+
+	<target name="compile">
+		<delete includeEmptyDirs="true" dir="${target}"/>
+		<mkdir dir="${target}"/>
+		<mkdir dir="${classes}"/>
+
+		<javac srcdir="${src}" destdir="${classes}" includeantruntime="false">
+			<classpath refid="master-classpath"/>
+		</javac>
+	</target>
+
+	<target name="run">
+		<java classname="Main" fork="true">
+			<classpath refid="master-classpath"/>
+		</java>
+	</target>
+
+	<target name="clean">
+		<delete includeEmptyDirs="true" dir="${target}"/>
+	</target>
+</project>
