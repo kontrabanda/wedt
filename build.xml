@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="polish-stemming" basedir="." default="compile">
+<project name="wedt" basedir="." default="compile">
 	
 	<property name="src" value="src"/>
 	<property name="lib" value="lib"/>
@@ -29,6 +29,22 @@
 	<target name="run">
 		<java classname="Main" fork="true">
 			<classpath refid="master-classpath"/>
+			<arg value="heuristic"/>
+			<arg value="localmaxs"/>
+		</java>
+	</target>
+
+	<target name="run-heuristic">
+		<java classname="Main" fork="true">
+			<classpath refid="master-classpath"/>
+			<arg value="heuristic"/>
+		</java>
+	</target>
+
+	<target name="run-localmaxs">
+		<java classname="Main" fork="true">
+			<classpath refid="master-classpath"/>
+			<arg value="localmaxs"/>
 		</java>
 	</target>
 
