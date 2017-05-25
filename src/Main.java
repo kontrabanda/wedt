@@ -1,4 +1,4 @@
-import data.FileReader;
+import data.DataGetter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +29,7 @@ public class Main {
 
     private static void runLocalMaxsAlgorithm() {
         System.out.println("runLocalMaxsAlgorithm");
-
+        DataGetter dataGetter = new DataGetter();
+        dataGetter.getData();
     }
 }
