@@ -2,6 +2,7 @@ package data;
 
 
 import data.filereader.FileReader;
+import data.redis.RedisData;
 import data.redis.RedisWrapper;
 import data.scraper.ScraperData;
 import data.scraper.ScraperService;
@@ -14,7 +15,12 @@ public class DataGetter {
     public DataGetter() {
         fileReader = new FileReader((fileReaderData) -> {
             ScraperData scraperData = scraperService.getDataFromHTMLFile(fileReaderData.file);
-            redisWrapper.setData(scraperData.value);
+
+            RedisData redisData = new RedisData();
+            redisData.key = scraperData.fileName;
+            redisData.value = scraperData.value;
+
+            redisWrapper.setData(redisData);
         });
     }
 

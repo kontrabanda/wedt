@@ -12,6 +12,7 @@
 		<fileset dir="${lib}">
 			<include name="jsoup-1.10.2.jar"/>
 			<include name="eduentitymine-proc_2.11-0.1-SNAPSHOT-one-jar.jar"/>
+			<include name="jedis-2.9.0.jar"/>
 		</fileset>
 		<pathelement location="${classes}"/>
 	</path>

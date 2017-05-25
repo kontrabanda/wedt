@@ -11,6 +11,7 @@ public class ScraperService {
     public ScraperData getDataFromHTMLFile(File inputFile) {
         Document doc = getDocument(inputFile);
         ScraperData scrapedDataModel = new ScraperData();
+        scrapedDataModel.fileName = inputFile.getName();
         scrapedDataModel.value = doc.body().text();
 
         return scrapedDataModel;
