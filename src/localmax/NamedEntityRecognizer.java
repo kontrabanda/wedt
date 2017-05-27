@@ -1,17 +1,19 @@
 package localmax;
 
 import java.util.Arrays;
+import data.DataGetter;
 
 public class NamedEntityRecognizer {
-    private static double P(String x, String y){
-        return 0.2;
+    private DataGetter dataGetter = new DataGetter();
+    private double P(String x, String y){
+        return dataGetter.getBigramFrequency(x, y);
     }
 
-    private static double P(String x){
-        return 0.1;
+    private double P(String x){
+        return dataGetter.getWordFrequency(x);
     }
 
-    private static double p(int x, int y, String[] ngram){
+    private double p(int x, int y, String[] ngram){
         double p;
         if(x==y)
             return P(ngram[x]);
@@ -23,7 +25,7 @@ public class NamedEntityRecognizer {
         return p;
     }
 
-    private static double gcd(String[] ngram){
+    private double gcd(String[] ngram){
         int n = ngram.length-1;
         double avp = 0;
 
@@ -33,7 +35,7 @@ public class NamedEntityRecognizer {
         return Math.pow(p(1, n, ngram), 2)/avp;
     }
 
-    public static void parse(String text){
+    public void parse(String text){
         String[] ngram = text.split("\\s");
         int n = ngram.length;
         double[][] gcds = new double[n][n+1]; //pierwszy: początek ngramu, drugi: długość ngramu
