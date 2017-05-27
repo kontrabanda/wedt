@@ -1,6 +1,7 @@
 package data.scraper;
 
 
+import data.models.Bigram;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -8,11 +9,14 @@ import java.io.File;
 import java.io.IOException;
 
 public class ScraperService {
-    public ScraperData getDataFromHTMLFile(File inputFile) {
+    public ScraperData getData(File inputFile) {
         Document doc = getDocument(inputFile);
         ScraperData scrapedDataModel = new ScraperData();
+
         scrapedDataModel.fileName = inputFile.getName();
-        scrapedDataModel.value = doc.body().text();
+        scrapedDataModel.text = getText(doc);
+        scrapedDataModel.words = getWords(scrapedDataModel.text);
+        scrapedDataModel.bigrams = getBigrams(scrapedDataModel.text);
 
         return scrapedDataModel;
     }
@@ -27,5 +31,17 @@ public class ScraperService {
         }
 
         return doc;
+    }
+
+    private String getText(Document doc) {
+        return doc.body().text();
+    }
+
+    private String[] getWords(String text) {
+        return text.split("\\W+");
+    }
+
+    private Bigram[] getBigrams(String text) {
+        return null;
     }
 }

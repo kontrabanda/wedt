@@ -2,26 +2,33 @@ package data;
 
 
 import data.filereader.FileReader;
-import data.redis.RedisData;
-import data.redis.RedisWrapper;
+import data.models.Bigram;
+import data.redis.writer.RedisWordsWriter;
 import data.scraper.ScraperData;
 import data.scraper.ScraperService;
 
 public class DataGetter {
-    private RedisWrapper redisWrapper = RedisWrapper.getInstance();
+    private RedisWordsWriter redisWordsWriter = new RedisWordsWriter();
     private FileReader fileReader;
     private ScraperService scraperService = new ScraperService();
 
     public DataGetter() {
         fileReader = new FileReader((fileReaderData) -> {
-            ScraperData scraperData = scraperService.getDataFromHTMLFile(fileReaderData.file);
+            ScraperData scraperData = scraperService.getData(fileReaderData.file);
 
-            RedisData redisData = new RedisData();
-            redisData.key = scraperData.fileName;
-            redisData.value = scraperData.value;
-
-            redisWrapper.setData(redisData);
+            saveWords(scraperData.words);
+            saveBigrams(scraperData.bigrams);
         });
+    }
+
+    private void saveWords(String[] words) {
+        for(String singleWord: words) {
+            redisWordsWriter.write(singleWord);
+        }
+    }
+
+    private void saveBigrams(Bigram[] bigrams) {
+
     }
 
     public void getData() {
