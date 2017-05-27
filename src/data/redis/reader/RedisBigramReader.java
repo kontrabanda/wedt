@@ -19,4 +19,8 @@ public class RedisBigramReader extends RedisReader {
     double getOverallOccurrenceCount() {
         return occurrenceCount;
     }
+
+    public double read(String firstWord, String secondWord) {
+        return read(firstWord + "_" + secondWord);
+    }
 }
