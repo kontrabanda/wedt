@@ -32,6 +32,7 @@
 			<classpath refid="master-classpath"/>
 			<arg value="heuristic"/>
 			<arg value="localmaxs"/>
+			<arg value="get-data"/>
 		</java>
 	</target>
 
@@ -39,6 +40,13 @@
 		<java classname="Main" fork="true">
 			<classpath refid="master-classpath"/>
 			<arg value="heuristic"/>
+		</java>
+	</target>
+
+	<target name="run-get-data">
+		<java classname="Main" fork="true">
+			<classpath refid="master-classpath"/>
+			<arg value="get-data"/>
 		</java>
 	</target>
 

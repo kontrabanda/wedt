@@ -17,6 +17,10 @@ public class Main {
             runHeuristicAlgorithm();
         }
 
+        if(actions.contains("get-data")) {
+            runGetData();
+        }
+
         if(actions.contains("localmaxs")) {
             runLocalMaxsAlgorithm();
         }
@@ -28,9 +32,13 @@ public class Main {
         //heuristicAlgorithmWrapper.runHeuristic();
     }
 
-    private static void runLocalMaxsAlgorithm() {
-        System.out.println("runLocalMaxsAlgorithm");
+    private static void runGetData() {
+        System.out.println("runGetData");
         DataGetter dataGetter = new DataGetter();
         dataGetter.getData();
+    }
+
+    private static void runLocalMaxsAlgorithm() {
+        System.out.println("runLocalMaxsAlgorithm");
     }
 }

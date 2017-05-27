@@ -3,12 +3,14 @@ package data;
 
 import data.filereader.FileReader;
 import data.models.Bigram;
+import data.redis.writer.RedisBigramWriter;
 import data.redis.writer.RedisWordsWriter;
 import data.scraper.ScraperData;
 import data.scraper.ScraperService;
 
 public class DataGetter {
     private RedisWordsWriter redisWordsWriter = new RedisWordsWriter();
+    private RedisBigramWriter redisBigramWriter = new RedisBigramWriter();
     private FileReader fileReader;
     private ScraperService scraperService = new ScraperService();
 
@@ -28,7 +30,9 @@ public class DataGetter {
     }
 
     private void saveBigrams(Bigram[] bigrams) {
-
+        for(Bigram singleBigram: bigrams) {
+            redisBigramWriter.write(singleBigram);
+        }
     }
 
     public void getData() {
