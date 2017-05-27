@@ -55,7 +55,8 @@ public class Main {
     private static void runReadData() {
         System.out.println("readData");
         DataGetter dataGetter = new DataGetter();
-        dataGetter.readData();
+        //dataGetter.forEachWord();
+        dataGetter.forEachBigram();
     }
 
     private static void runLocalMaxsAlgorithm() {

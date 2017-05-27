@@ -1,6 +1,6 @@
 package data.redis.reader;
 
 
-public interface RedisReadWordAction {
+public interface RedisReadAction {
     void read(String word, double frequency, String value);
 }

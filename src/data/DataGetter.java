@@ -4,7 +4,9 @@ package data;
 import data.filereader.FileReader;
 import data.models.Bigram;
 import data.redis.clear.RedisClear;
+import data.redis.reader.RedisBigramReader;
 import data.redis.reader.RedisReader;
+import data.redis.reader.RedisWordReader;
 import data.redis.writer.RedisBigramWriter;
 import data.redis.writer.RedisWordsWriter;
 import data.scraper.ScraperData;
@@ -42,12 +44,19 @@ public class DataGetter {
         fileReader.readData();
     }
 
+    public void forEachWord() {
+        RedisWordReader redisWordReader = new RedisWordReader();
 
-    public void readData() {
-        RedisReader redisReader = new RedisReader();
+        redisWordReader.readForEach((word, frequency, count) -> {
+            System.out.println("Word: " + word + ", frequency: " + frequency + ", count: " + count);
+        });
+    }
 
-        redisReader.readForEach((word, frequency, count) -> {
-            System.out.println("Word: " + word + ", count: " + count);
+    public void forEachBigram() {
+        RedisBigramReader redisBigramReader = new RedisBigramReader();
+
+        redisBigramReader.readForEach((bigram, frequency, count) -> {
+            System.out.println("Bigram: " + bigram + ", frequency: " + frequency + ", count: " + count);
         });
     }
 }

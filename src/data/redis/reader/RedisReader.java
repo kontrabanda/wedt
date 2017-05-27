@@ -9,21 +9,11 @@ import redis.clients.jedis.ScanResult;
 import java.util.List;
 import java.util.Map.Entry;
 
-public class RedisReader {
+public abstract class RedisReader {
     private Jedis jedis = RedisConfig.jedis;
-    private double occurrenceCount;
 
-    public RedisReader() {
-        occurrenceCount = Double.parseDouble(jedis.get(RedisConfig.WORDS_OCCURRENCE_COUNT));
-    }
-
-    String getHashMapWordsName() {
-        return RedisConfig.WORDS;
-    }
-
-    double getOverallOccurrenceCount() {
-        return occurrenceCount;
-    }
+    abstract String getHashMapWordsName();
+    abstract double getOverallOccurrenceCount();
 
     public double read(String value) {
         double occurrenceCount = getValueOccurrenceCount(value);
@@ -34,7 +24,7 @@ public class RedisReader {
         return Double.parseDouble(jedis.hget(getHashMapWordsName(), value));
     }
 
-    public void readForEach(RedisReadWordAction redisReadWordAction) {
+    public void readForEach(RedisReadAction redisReadAction) {
         String cursor = redis.clients.jedis.ScanParams.SCAN_POINTER_START;
         ScanParams scanParams = new ScanParams().count(100);
         System.out.println(cursor);
@@ -42,17 +32,16 @@ public class RedisReader {
             ScanResult<Entry<String, String>> scanResult = jedis.hscan(getHashMapWordsName(), cursor, scanParams);
             List<Entry<String, String>> result = scanResult.getResult();
 
-            readFromRedisData(result, redisReadWordAction);
+            readFromRedisData(result, redisReadAction);
 
             cursor = scanResult.getStringCursor();
         } while (!cursor.equals("0"));
     }
 
-    private void readFromRedisData(List<Entry<String, String>> redisData, RedisReadWordAction redisReadWordAction) {
+    private void readFromRedisData(List<Entry<String, String>> redisData, RedisReadAction redisReadAction) {
         for(Entry<String, String> entry: redisData) {
-            //double frequency = getValueOccurrenceCount(entry.getValue());
-
-            redisReadWordAction.read(entry.getKey(), 0, entry.getValue());
+            double frequency = Double.parseDouble(entry.getValue())/getOverallOccurrenceCount();
+            redisReadAction.read(entry.getKey(), frequency, entry.getValue());
         }
     }
 }
