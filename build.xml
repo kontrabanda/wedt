@@ -32,6 +32,7 @@
 			<classpath refid="master-classpath"/>
 			<arg value="heuristic"/>
 			<arg value="localmaxs"/>
+			<arg value="write-data"/>
 		</java>
 	</target>
 
@@ -39,6 +40,27 @@
 		<java classname="Main" fork="true">
 			<classpath refid="master-classpath"/>
 			<arg value="heuristic"/>
+		</java>
+	</target>
+
+	<target name="run-clear-data">
+		<java classname="Main" fork="true">
+			<classpath refid="master-classpath"/>
+			<arg value="clear-data"/>
+		</java>
+	</target>
+
+	<target name="run-write-data">
+		<java classname="Main" fork="true">
+			<classpath refid="master-classpath"/>
+			<arg value="write-data"/>
+		</java>
+	</target>
+
+	<target name="run-read-data">
+		<java classname="Main" fork="true">
+			<classpath refid="master-classpath"/>
+			<arg value="read-data"/>
 		</java>
 	</target>
 
