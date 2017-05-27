@@ -11,10 +11,12 @@ public class RedisWordReader extends RedisReader{
         occurrenceCount = Double.parseDouble(jedis.get(RedisConfig.WORDS_OCCURRENCE_COUNT));
     }
 
-    String getHashMapWordsName() {
+    @Override
+    String getHashMapName() {
         return RedisConfig.WORDS;
     }
 
+    @Override
     double getOverallOccurrenceCount() {
         return occurrenceCount;
     }

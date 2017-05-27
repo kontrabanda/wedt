@@ -16,7 +16,7 @@ public class RedisBigramWriter extends RedisWriter {
     }
 
     public void write(Bigram bigram) {
-        String value = bigram.firstWord + "_" + bigram.secondWord;
+        String value = bigram.firstWord + RedisConfig.BIGRAM_SEPARATOR + bigram.secondWord;
         write(value);
     }
 }

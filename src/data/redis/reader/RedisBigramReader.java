@@ -3,7 +3,6 @@ package data.redis.reader;
 import data.redis.RedisConfig;
 import redis.clients.jedis.Jedis;
 
-
 public class RedisBigramReader extends RedisReader {
     private double occurrenceCount;
 
@@ -12,10 +11,12 @@ public class RedisBigramReader extends RedisReader {
         occurrenceCount = Double.parseDouble(jedis.get(RedisConfig.BIGRAMS_OCCURRENCE_COUNT));
     }
 
-    String getHashMapWordsName() {
+    @Override
+    String getHashMapName() {
         return RedisConfig.BIGRAMS;
     }
 
+    @Override
     double getOverallOccurrenceCount() {
         return occurrenceCount;
     }

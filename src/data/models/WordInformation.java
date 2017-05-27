@@ -9,9 +9,9 @@ public class WordInformation {
         return new WordInformation(word, frequency);
     }
 
-    WordInformation() {}
+    public WordInformation() {}
 
-    WordInformation(String word, double frequency) {
+    public WordInformation(String word, double frequency) {
         this.word = word;
         this.frequency = frequency;
     }
