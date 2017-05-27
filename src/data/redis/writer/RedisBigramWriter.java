@@ -2,19 +2,17 @@ package data.redis.writer;
 
 
 import data.models.Bigram;
+import data.redis.RedisConfig;
 
 public class RedisBigramWriter extends RedisWriter {
-    private final String OVERALL_OCCURRENCE_COUNT = "bigram_occurrence_count";
-    private final String BIGRAMS = "bigrams";
-
     @Override
     String getOverallOccurrenceCountName() {
-        return OVERALL_OCCURRENCE_COUNT;
+        return RedisConfig.BIGRAMS_OCCURRENCE_COUNT;
     }
 
     @Override
-    String getHashMapWords() {
-        return BIGRAMS;
+    String getHashMapWordsName() {
+        return RedisConfig.BIGRAMS;
     }
 
     public void write(Bigram bigram) {

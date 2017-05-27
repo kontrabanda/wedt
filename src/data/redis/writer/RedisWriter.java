@@ -7,11 +7,6 @@ import redis.clients.jedis.Jedis;
 abstract public class RedisWriter {
     private Jedis jedis = RedisConfig.jedis;
 
-    RedisWriter() {
-        jedis.set(getOverallOccurrenceCountName(), "0");
-        jedis.del(getHashMapWords());
-    }
-
     public void write(String value) {
         incrementOccurrenceCount();
         writeValue(value);
@@ -30,17 +25,17 @@ abstract public class RedisWriter {
     }
 
     private boolean checkIfValueExists(String value) {
-        return jedis.hget(getHashMapWords(), value) != null;
+        return jedis.hget(getHashMapWordsName(), value) != null;
     }
 
     private void writeNewValue(String value) {
-        jedis.hset(getHashMapWords(), value, "1");
+        jedis.hset(getHashMapWordsName(), value, "1");
     }
 
     private void incrementValueOccurrenceCount(String value) {
-        jedis.hincrBy(getHashMapWords(), value, 1);
+        jedis.hincrBy(getHashMapWordsName(), value, 1);
     }
 
     abstract String getOverallOccurrenceCountName();
-    abstract String getHashMapWords();
+    abstract String getHashMapWordsName();
 }

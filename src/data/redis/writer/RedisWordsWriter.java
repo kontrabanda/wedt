@@ -1,17 +1,16 @@
 package data.redis.writer;
 
 
-public class RedisWordsWriter extends RedisWriter {
-    private final String OVERALL_OCCURRENCE_COUNT = "words_occurrence_count";
-    private final String WORDS = "words";
+import data.redis.RedisConfig;
 
+public class RedisWordsWriter extends RedisWriter {
     @Override
     String getOverallOccurrenceCountName() {
-        return OVERALL_OCCURRENCE_COUNT;
+        return RedisConfig.WORDS_OCCURRENCE_COUNT;
     }
 
     @Override
-    String getHashMapWords() {
-        return WORDS;
+    String getHashMapWordsName() {
+        return RedisConfig.WORDS;
     }
 }
