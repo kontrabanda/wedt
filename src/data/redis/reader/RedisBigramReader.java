@@ -22,6 +22,6 @@ public class RedisBigramReader extends RedisReader {
     }
 
     public double read(String firstWord, String secondWord) {
-        return read(firstWord + "_" + secondWord);
+        return read(firstWord + RedisConfig.BIGRAM_SEPARATOR + secondWord);
     }
 }
