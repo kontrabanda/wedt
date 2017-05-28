@@ -16,8 +16,11 @@ public abstract class RedisReader {
     }
 
     private double getValueOccurrenceCount(String value) {
-        return Double.parseDouble(jedis.hget(getHashMapName(), value));
+        try {
+            return Double.parseDouble(jedis.hget(getHashMapName(), value));
+        } catch (NullPointerException e) {
+            System.out.println("getValueOccurrenceCount: problem with parsing value=" + value);
+            return 0;
+        }
     }
-
-
 }
