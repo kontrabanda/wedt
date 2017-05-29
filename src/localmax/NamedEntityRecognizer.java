@@ -1,10 +1,14 @@
 package localmax;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 import data.DataGetter;
 import data.scraper.ScraperData;
 import data.scraper.SimpleScraperService;
 import data.filereader.FileReader;
+import data.filewriter.*;
+import java.lang.StringBuilder;
 
 public class NamedEntityRecognizer {
     private SimpleScraperService scraperService = new SimpleScraperService();
@@ -53,46 +57,75 @@ public class NamedEntityRecognizer {
             ScraperData scraperData = scraperService.getData(fileReaderData.file);
 
             String[] strings = scraperData.text.split("[.,:;\\n\\?]");
+
+            FileWriter fileWriter = new FileWriter();
+            FileWriterData fwd = new FileWriterData();
+            fwd.path = "/home/piotrek";
+            fwd.filename = "ner_out.txt";
+            StringBuilder out = new StringBuilder();
+
             for(String text : strings) {
-                parse(text);    //zwracane encje zwracać dalej
+                for(String s : parse(text)) {    //zwracane encje zwracać dalej
+                    out.append(s);
+                    out.append("\n");
+                }
+
             }
+            fwd.data = out.toString();
+            fileWriter.writeData(fwd);
         });
         fileReader.readData();
+
 
         return temp;
     }
 
-    public String[] parse(String text){
-        System.out.println(text);
-        System.out.println("");
+    public List<String> parse(String text){
+        //System.out.println("[parsing] "+text);
+        //System.out.println("");
+        List<String> temp = new ArrayList();
         String[] ngram = text.split("\\W+");
         int n = ngram.length;
         double[][] gcds = new double[n][n+1]; //pierwszy: początek ngramu, drugi: długość ngramu
+
         for(int start = 0; start < n-1; ++start){
-            System.out.print(ngram[start]+" ");
+            //System.out.print(ngram[start]+" ");
             if(ngram[start].length() == 0) {
-                System.out.println("");
+                //System.out.println("");
                 continue;
             }
             if(!Character.isUpperCase(ngram[start].charAt(0))){
-                System.out.println("");
+                //System.out.println("");
                 continue;
             }
 
             for(int len=2; len<=n-start; ++len){
                 String[] temp_ngram = Arrays.copyOfRange(ngram, start, start+len);
-                gcds[start][len] = gcd(temp_ngram);
-                System.out.print(gcds[start][len]+" ");
-                //przerwać jeśli gcd mocno spadło, zwiększyć start o len
-                if(false){
-                    start += len-1;
+                if(!Character.isUpperCase(temp_ngram[0].charAt(0))) {
+                    //System.out.println("");
                     break;
                 }
+                gcds[start][len] = gcd(temp_ngram);
+                if(len>2) {
+                    if(gcds[start][len] / gcds[start][len - 1] < 1.0/70.0){
+
+                        temp_ngram = Arrays.copyOfRange(ngram, start, start+len-1);
+                        String phrase = String.join(" ", temp_ngram);
+                        temp.add(phrase);
+                        //System.out.println("gcdratio: "+gcds[start][len] / gcds[start][len - 1]);
+                        //System.out.println("[Detected] "+phrase);
+                        start += len-1;
+                        break;
+                    }
+                    /*else
+                        System.out.println("gcdratio: "+gcds[start][len] / gcds[start][len - 1]);*/
+                }
+                //System.out.print(gcds[start][len]+" ");
             }
-            System.out.println("");
+            //System.out.println("");
         }
         //tutaj posprawdzać gcds i porobić z tego listę wykrytych encji
-        String[] temp = null;
+
         return temp;
     }
 }
