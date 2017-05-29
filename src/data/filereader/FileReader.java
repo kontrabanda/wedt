@@ -1,10 +1,13 @@
 package data.filereader;
 
 
+import data.properties.PropertiesReader;
+
 import java.io.File;
 
 public class FileReader {
-    private final String PATH_TO_DOCUMENTS = "./data/pagestorage_anno/";
+    private static PropertiesReader propertiesReader = PropertiesReader.getInstance();
+    private final String PATH_TO_DOCUMENTS = propertiesReader.getValue("INPUT_DATA_PATH");
     private FileReaderAction fileReaderAction;
 
     public FileReader(FileReaderAction fileReaderAction) {
