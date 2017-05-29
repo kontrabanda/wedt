@@ -11,6 +11,11 @@ import data.filewriter.*;
 import java.lang.StringBuilder;
 
 public class NamedEntityRecognizer {
+
+    private final double threshold = 1.0/70.0;
+    private final String writer_path = "/home/piotrek";
+    private final String writer_name = "ner_out.txt";
+
     private SimpleScraperService scraperService = new SimpleScraperService();
     private static DataGetter dataGetter = new DataGetter();
     private double P(String x, String y){
@@ -55,13 +60,14 @@ public class NamedEntityRecognizer {
         String[] temp = null;
         FileReader fileReader = new FileReader((fileReaderData) -> {
             ScraperData scraperData = scraperService.getData(fileReaderData.file);
+            System.out.println("Current dir: "+fileReaderData.dirPath);
 
             String[] strings = scraperData.text.split("[.,:;\\n\\?]");
 
             FileWriter fileWriter = new FileWriter();
             FileWriterData fwd = new FileWriterData();
-            fwd.path = "/home/piotrek";
-            fwd.filename = "ner_out.txt";
+            fwd.path = writer_path;
+            fwd.filename = writer_name;
             StringBuilder out = new StringBuilder();
 
             for(String text : strings) {
@@ -106,8 +112,8 @@ public class NamedEntityRecognizer {
                     break;
                 }
                 gcds[start][len] = gcd(temp_ngram);
-                if(len>2) {
-                    if(gcds[start][len] / gcds[start][len - 1] < 1.0/70.0){
+                if(len>3 || (len>2 && start+len==n)) {
+                    if(gcds[start][len] / gcds[start][len - 1] < threshold){
 
                         temp_ngram = Arrays.copyOfRange(ngram, start, start+len-1);
                         String phrase = String.join(" ", temp_ngram);
@@ -124,7 +130,6 @@ public class NamedEntityRecognizer {
             }
             //System.out.println("");
         }
-        //tutaj posprawdzać gcds i porobić z tego listę wykrytych encji
 
         return temp;
     }
