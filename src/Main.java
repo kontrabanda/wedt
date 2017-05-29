@@ -1,4 +1,5 @@
 import data.DataGetter;
+import localmax.NamedEntityRecognizer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -65,5 +66,9 @@ public class Main {
 
     private static void runLocalMaxsAlgorithm() {
         System.out.println("runLocalMaxsAlgorithm");
+        NamedEntityRecognizer ner = new NamedEntityRecognizer();
+        /*ner.parse("Frequently Asked Questions\n" +
+                "Question: What's the requirement of the paper format?\n");*/
+        ner.findEntities();
     }
 }

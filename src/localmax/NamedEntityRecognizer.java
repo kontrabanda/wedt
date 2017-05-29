@@ -69,13 +69,16 @@ public class NamedEntityRecognizer {
         int n = ngram.length;
         double[][] gcds = new double[n][n+1]; //pierwszy: początek ngramu, drugi: długość ngramu
         for(int start = 0; start < n-1; ++start){
-            if(ngram[start].length() == 0)
-                continue;
-            if(!Character.isUpperCase(ngram[start].charAt(0))){
-                //start++;
+            System.out.print(ngram[start]+" ");
+            if(ngram[start].length() == 0) {
+                System.out.println("");
                 continue;
             }
-            System.out.print(ngram[start]+" ");
+            if(!Character.isUpperCase(ngram[start].charAt(0))){
+                System.out.println("");
+                continue;
+            }
+
             for(int len=2; len<=n-start; ++len){
                 String[] temp_ngram = Arrays.copyOfRange(ngram, start, start+len);
                 gcds[start][len] = gcd(temp_ngram);
