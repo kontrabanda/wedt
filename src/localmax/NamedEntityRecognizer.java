@@ -7,6 +7,8 @@ import data.DataGetter;
 import data.scraper.ScraperData;
 import data.scraper.SimpleScraperService;
 import data.filereader.FileReader;
+import data.filewriter.*;
+import java.lang.StringBuilder;
 
 public class NamedEntityRecognizer {
     private SimpleScraperService scraperService = new SimpleScraperService();
@@ -55,17 +57,31 @@ public class NamedEntityRecognizer {
             ScraperData scraperData = scraperService.getData(fileReaderData.file);
 
             String[] strings = scraperData.text.split("[.,:;\\n\\?]");
+
+            FileWriter fileWriter = new FileWriter();
+            FileWriterData fwd = new FileWriterData();
+            fwd.path = "/home/piotrek";
+            fwd.filename = "ner_out.txt";
+            StringBuilder out = new StringBuilder();
+
             for(String text : strings) {
-                parse(text);    //zwracane encje zwracać dalej
+                for(String s : parse(text)) {    //zwracane encje zwracać dalej
+                    out.append(s);
+                    out.append("\n");
+                }
+
             }
+            fwd.data = out.toString();
+            fileWriter.writeData(fwd);
         });
         fileReader.readData();
+
 
         return temp;
     }
 
     public List<String> parse(String text){
-        System.out.println("[parsing] "+text);
+        //System.out.println("[parsing] "+text);
         //System.out.println("");
         List<String> temp = new ArrayList();
         String[] ngram = text.split("\\W+");
@@ -97,7 +113,7 @@ public class NamedEntityRecognizer {
                         String phrase = String.join(" ", temp_ngram);
                         temp.add(phrase);
                         //System.out.println("gcdratio: "+gcds[start][len] / gcds[start][len - 1]);
-                        System.out.println("[Detected] "+phrase);
+                        //System.out.println("[Detected] "+phrase);
                         start += len-1;
                         break;
                     }
