@@ -52,7 +52,10 @@ public class NamedEntityRecognizer {
         FileReader fileReader = new FileReader((fileReaderData) -> {
             ScraperData scraperData = scraperService.getData(fileReaderData.file);
 
-            parse(scraperData.text);    //zwracane encje zwracać dalej
+            String[] strings = scraperData.text.split("[.,:;\\n\\?]");
+            for(String text : strings) {
+                parse(text);    //zwracane encje zwracać dalej
+            }
         });
         fileReader.readData();
 
@@ -60,10 +63,14 @@ public class NamedEntityRecognizer {
     }
 
     public String[] parse(String text){
+        System.out.println(text);
+        System.out.println("");
         String[] ngram = text.split("\\W+");
         int n = ngram.length;
         double[][] gcds = new double[n][n+1]; //pierwszy: początek ngramu, drugi: długość ngramu
         for(int start = 0; start < n-1; ++start){
+            if(ngram[start].length() == 0)
+                continue;
             if(!Character.isUpperCase(ngram[start].charAt(0))){
                 //start++;
                 continue;
