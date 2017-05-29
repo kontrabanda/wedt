@@ -9,25 +9,25 @@ import javax.print.Doc;
 import java.io.File;
 import java.io.IOException;
 
-public class ScraperService {
-    private static int badDocumentCounter;
-    private static int documentCounter;
+public class SimpleScraperService extends ScraperService {
+    //private static int badDocumentCounter;
+    //private static int documentCounter;
 
     public ScraperData getData(File inputFile) {
         Document doc = getDocument(inputFile);
         ScraperData scrapedDataModel = new ScraperData();
 
-        documentStatistic(doc);
+        //documentStatistic(doc);
 
         scrapedDataModel.fileName = inputFile.getName();
         scrapedDataModel.text = getText(doc);
-        scrapedDataModel.words = getWords(scrapedDataModel.text);
-        scrapedDataModel.bigrams = getBigrams(scrapedDataModel.words);
+        //scrapedDataModel.words = getWords(scrapedDataModel.text);
+        //scrapedDataModel.bigrams = getBigrams(scrapedDataModel.words);
 
         return scrapedDataModel;
     }
 
-    private void documentStatistic(Document doc) {
+   /* private void documentStatistic(Document doc) {
         ++documentCounter;
 
         if(doc == null) {
@@ -38,9 +38,9 @@ public class ScraperService {
             System.out.println("Bad document counter: " + badDocumentCounter);
             System.out.println("*******************************************");
         }
-    }
+    }*/
 
-    protected Document getDocument(File inputFile) {
+    /*private Document getDocument(File inputFile) {
         Document doc = null;
 
         try {
@@ -50,9 +50,9 @@ public class ScraperService {
         }
 
         return doc;
-    }
+    }*/
 
-    protected String getText(Document doc) {
+    /*private String getText(Document doc) {
         return (doc != null && doc.body() != null) ? doc.body().text() : "";
     }
 
@@ -69,5 +69,5 @@ public class ScraperService {
         }
 
         return result;
-    }
+    }*/
 }
