@@ -32,6 +32,7 @@ public class FileReader {
         for(File file: filesInDirectories) {
             FileReaderData fileReaderData = new FileReaderData();
             fileReaderData.file = file;
+            fileReaderData.dirPath = dir.getPath();
 
             fileReaderAction.readingData(fileReaderData);
         }
