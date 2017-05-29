@@ -20,7 +20,7 @@ public abstract class RedisReader {
             return Double.parseDouble(jedis.hget(getHashMapName(), value));
         } catch (NullPointerException e) {
             System.out.println("getValueOccurrenceCount: problem with parsing value=" + value);
-            return 0;
+            return RedisConfig.DATABASE_MISS_VALUE_COUNT;
         }
     }
 }
