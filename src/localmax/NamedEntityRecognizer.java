@@ -10,6 +10,8 @@ import data.scraper.ScraperData;
 import data.scraper.SimpleScraperService;
 import data.filereader.FileReader;
 import data.filewriter.*;
+import localmax.models.Phrase;
+
 import java.lang.StringBuilder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +48,7 @@ public class NamedEntityRecognizer {
         fwd.path = fileReaderData.dirPath;
         fwd.filename = writer_name;
         fwd.data = data;
+        fwd.readFileName = fileReaderData.file.getName();
 
         fileWriter.writeData(fwd);
     }
@@ -61,11 +64,11 @@ public class NamedEntityRecognizer {
     }
 
     private StringBuilder getNamedEntitiesFromSentence(String sentence, StringBuilder out) {
-        List<String> entities = parse(sentence);
+        List<Phrase> entities = parse(sentence);
         EntityFilter entityFilter = new EntityFilter(entities);
-        entities = entityFilter.getEntitiesFilteredByCapitalLetters();
+        List<String> filtered = entityFilter.getEntitiesFilteredByCapitalLetters();
 
-        for(String singleEntity : entities) {
+        for(String singleEntity : filtered) {
             out.append(singleEntity);
             out.append("\n");
         }
@@ -73,8 +76,8 @@ public class NamedEntityRecognizer {
         return out;
     }
 
-    private List<String> parse(String text){
-        List<String> temp = new ArrayList();
+    private List<Phrase> parse(String text){
+        List<Phrase> temp = new ArrayList<>();
         String[] ngram = text.split("\\W+");
         int n = ngram.length;
         double[][] gcds = new double[n][n+1];
@@ -87,18 +90,18 @@ public class NamedEntityRecognizer {
                 continue;
             }
 
-            for(int len=2; len<=n-start; ++len){
+            for(int len = 2; len <= n-start; ++len){
                 String[] temp_ngram = Arrays.copyOfRange(ngram, start, start+len);
                 if(!Character.isUpperCase(temp_ngram[0].charAt(0))) {
                     break;
                 }
                 gcds[start][len] = gcd(temp_ngram);
-                if(len>3 || (len>2 && start+len==n)) {
-                    if(gcds[start][len] / gcds[start][len - 1] < threshold){
-
+                if(len > 3 || (len > 2 && start+len == n)) {
+                    if(gcds[start][len] / gcds[start][len - 1] < threshold) {
                         temp_ngram = Arrays.copyOfRange(ngram, start, start+len-1);
-                        String phrase = String.join(" ", temp_ngram);
-                        temp.add(phrase);
+                        Phrase phrase = Phrase.of(String.join(" ", temp_ngram), start, start + len - 1);
+                        addToPhrases(temp, phrase);
+
                         start += len-1;
                         break;
                     }
@@ -108,6 +111,23 @@ public class NamedEntityRecognizer {
 
         return temp;
     }
+
+    private void addToPhrases(List<Phrase> phrases, Phrase newPhrase) {
+        if(phrases.size() == 0) {
+            phrases.add(newPhrase);
+            return;
+        }
+
+        Phrase lastElement = phrases.get(phrases.size() - 1);
+
+        if(lastElement.endIndex + 1 == newPhrase.startIndex) {
+            lastElement.text += " " + newPhrase.text;
+            lastElement.endIndex = newPhrase.endIndex;
+        } else {
+            phrases.add(newPhrase);
+        }
+    }
+
 
     private double gcd(String[] ngram){
         int n = ngram.length;

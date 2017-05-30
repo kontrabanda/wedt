@@ -5,4 +5,5 @@ public class FileWriterData {
     public String path;
     public String data;
     public String filename;
+    public String readFileName;
 }

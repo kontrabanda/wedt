@@ -1,22 +1,24 @@
 package localmax;
 
 
+import localmax.models.Phrase;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class EntityFilter {
-    private List<String> allEntites;
+    private List<Phrase> allEntites;
 
-    EntityFilter(List<String> entities) {
+    EntityFilter(List<Phrase> entities) {
         allEntites = entities;
     }
 
     List<String> getEntitiesFilteredByCapitalLetters() {
         List<String> result = new ArrayList<>();
 
-        for(String singleEntity: allEntites) {
-            if(checkIfNamedEntity(singleEntity)) {
-                result.add(singleEntity);
+        for(Phrase singleEntity: allEntites) {
+            if(checkIfNamedEntity(singleEntity.text)) {
+                result.add(singleEntity.text);
             }
         }
 
