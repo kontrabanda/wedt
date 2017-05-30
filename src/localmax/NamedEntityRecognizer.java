@@ -4,45 +4,109 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import data.DataGetter;
+import data.filereader.FileReaderData;
 import data.properties.PropertiesReader;
 import data.scraper.ScraperData;
 import data.scraper.SimpleScraperService;
 import data.filereader.FileReader;
 import data.filewriter.*;
 import java.lang.StringBuilder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class NamedEntityRecognizer {
+    public static Logger logger = Logger.getLogger(NamedEntityRecognizer.class.getName());
     private PropertiesReader propertiesReader = PropertiesReader.getInstance();
     private final double threshold = Double.parseDouble(propertiesReader.getValue("THRESHOLD"));
     private final String writer_name = propertiesReader.getValue("WRITER_FILE_NAME");
 
     private SimpleScraperService scraperService = new SimpleScraperService();
     private static DataGetter dataGetter = new DataGetter();
-    private double P(String x, String y){
-        return dataGetter.getBigramFrequency(x, y);
+
+    public void findEntities(){
+        FileReader fileReader = new FileReader((fileReaderData) -> {
+            String[] sentences = getSentenceFromFile(fileReaderData);
+            StringBuilder namedEntities = getAllNamedEntities(sentences);
+
+            writeToFile(fileReaderData, namedEntities.toString());
+        });
+
+        fileReader.readData();
     }
 
-    private double P(String x){
-        return dataGetter.getWordFrequency(x);
+    private String[] getSentenceFromFile(FileReaderData fileReaderData) {
+        ScraperData scraperData = scraperService.getData(fileReaderData.file);
+        return scraperData.text.split("[.,:;\\n\\?]");
     }
 
-    private double p(int x, int y, String[] ngram){
-        double p;
-        //String phrase="";
-        if(x==y) {
-            //System.out.println("P("+ngram[x]+")="+P(ngram[x]));
-            return P(ngram[x]);
+    private void writeToFile(FileReaderData fileReaderData, String data) {
+        FileWriter fileWriter = new FileWriter();
+        FileWriterData fwd = new FileWriterData();
+
+        fwd.path = fileReaderData.dirPath;
+        fwd.filename = writer_name;
+        fwd.data = data;
+
+        fileWriter.writeData(fwd);
+    }
+
+    private StringBuilder getAllNamedEntities(String[] sentences) {
+        StringBuilder out = new StringBuilder();
+
+        for(String singleSentence : sentences) {
+            out = getNamedEntitiesFromSentence(singleSentence, out);
         }
-        else{
-            p=P(ngram[x]);
-            for(int i=x+1; i<=y; ++i) {
-                p *= P(ngram[i - 1], ngram[i]);
-                //phrase += ngram[i-1]+" ";
+
+        return out;
+    }
+
+    private StringBuilder getNamedEntitiesFromSentence(String sentence, StringBuilder out) {
+        List<String> entities = parse(sentence);
+        EntityFilter entityFilter = new EntityFilter(entities);
+        entities = entityFilter.getEntitiesFilteredByCapitalLetters();
+
+        for(String singleEntity : entities) {
+            out.append(singleEntity);
+            out.append("\n");
+        }
+
+        return out;
+    }
+
+    private List<String> parse(String text){
+        List<String> temp = new ArrayList();
+        String[] ngram = text.split("\\W+");
+        int n = ngram.length;
+        double[][] gcds = new double[n][n+1];
+
+        for(int start = 0; start < n-1; ++start) {
+            if(ngram[start].length() == 0) {
+                continue;
             }
-            //phrase += ngram[y];
+            if(!Character.isUpperCase(ngram[start].charAt(0))) {
+                continue;
+            }
+
+            for(int len=2; len<=n-start; ++len){
+                String[] temp_ngram = Arrays.copyOfRange(ngram, start, start+len);
+                if(!Character.isUpperCase(temp_ngram[0].charAt(0))) {
+                    break;
+                }
+                gcds[start][len] = gcd(temp_ngram);
+                if(len>3 || (len>2 && start+len==n)) {
+                    if(gcds[start][len] / gcds[start][len - 1] < threshold){
+
+                        temp_ngram = Arrays.copyOfRange(ngram, start, start+len-1);
+                        String phrase = String.join(" ", temp_ngram);
+                        temp.add(phrase);
+                        start += len-1;
+                        break;
+                    }
+                }
+            }
         }
-        //System.out.println("P("+phrase+")="+p);
-        return p;
+
+        return temp;
     }
 
     private double gcd(String[] ngram){
@@ -56,81 +120,28 @@ public class NamedEntityRecognizer {
         return Math.pow(p(0, n-1, ngram), 2)/avp;
     }
 
-    public String[] findEntities(){
-        String[] temp = null;
-        FileReader fileReader = new FileReader((fileReaderData) -> {
-            ScraperData scraperData = scraperService.getData(fileReaderData.file);
-            System.out.println("Current dir: "+fileReaderData.dirPath);
-
-            String[] strings = scraperData.text.split("[.,:;\\n\\?]");
-
-            FileWriter fileWriter = new FileWriter();
-            FileWriterData fwd = new FileWriterData();
-            fwd.path = fileReaderData.dirPath+"/../";
-            fwd.filename = writer_name;
-            StringBuilder out = new StringBuilder();
-
-            for(String text : strings) {
-                for(String s : parse(text)) {    //zwracane encje zwracać dalej
-                    out.append(s);
-                    out.append("\n");
-                }
-
-            }
-            fwd.data = out.toString();
-            fileWriter.writeData(fwd);
-        });
-        fileReader.readData();
-
-
-        return temp;
+    private double P(String x, String y){
+        return dataGetter.getBigramFrequency(x, y);
     }
 
-    public List<String> parse(String text){
-        //System.out.println("[parsing] "+text);
-        //System.out.println("");
-        List<String> temp = new ArrayList();
-        String[] ngram = text.split("\\W+");
-        int n = ngram.length;
-        double[][] gcds = new double[n][n+1]; //pierwszy: początek ngramu, drugi: długość ngramu
+    private double P(String x){
+        return dataGetter.getWordFrequency(x);
+    }
 
-        for(int start = 0; start < n-1; ++start){
-            //System.out.print(ngram[start]+" ");
-            if(ngram[start].length() == 0) {
-                //System.out.println("");
-                continue;
-            }
-            if(!Character.isUpperCase(ngram[start].charAt(0))){
-                //System.out.println("");
-                continue;
-            }
+    private double p(int x, int y, String[] ngram){
+        double p;
 
-            for(int len=2; len<=n-start; ++len){
-                String[] temp_ngram = Arrays.copyOfRange(ngram, start, start+len);
-                if(!Character.isUpperCase(temp_ngram[0].charAt(0))) {
-                    //System.out.println("");
-                    break;
-                }
-                gcds[start][len] = gcd(temp_ngram);
-                if(len>3 || (len>2 && start+len==n)) {
-                    if(gcds[start][len] / gcds[start][len - 1] < threshold){
+        if(x==y) {
 
-                        temp_ngram = Arrays.copyOfRange(ngram, start, start+len-1);
-                        String phrase = String.join(" ", temp_ngram);
-                        temp.add(phrase);
-                        //System.out.println("gcdratio: "+gcds[start][len] / gcds[start][len - 1]);
-                        //System.out.println("[Detected] "+phrase);
-                        start += len-1;
-                        break;
-                    }
-                    /*else
-                        System.out.println("gcdratio: "+gcds[start][len] / gcds[start][len - 1]);*/
-                }
-                //System.out.print(gcds[start][len]+" ");
+            return P(ngram[x]);
+        }
+        else{
+            p=P(ngram[x]);
+            for(int i=x+1; i<=y; ++i) {
+                p *= P(ngram[i - 1], ngram[i]);
             }
-            //System.out.println("");
         }
 
-        return temp;
+        return p;
     }
 }

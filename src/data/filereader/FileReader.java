@@ -4,6 +4,7 @@ package data.filereader;
 import data.properties.PropertiesReader;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class FileReader {
     private static PropertiesReader propertiesReader = PropertiesReader.getInstance();
@@ -23,7 +24,10 @@ public class FileReader {
     }
 
     private File[] getDirectories() {
-        return new File(PATH_TO_DOCUMENTS).listFiles(File::isDirectory);
+        File[] result = new File(PATH_TO_DOCUMENTS).listFiles(File::isDirectory);
+        Arrays.sort(result);
+
+        return result;
     }
 
     private void getFilesFromDirectories(File dir) {
