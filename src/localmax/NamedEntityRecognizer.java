@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import data.DataGetter;
+import data.properties.PropertiesReader;
 import data.scraper.ScraperData;
 import data.scraper.SimpleScraperService;
 import data.filereader.FileReader;
@@ -11,9 +12,9 @@ import data.filewriter.*;
 import java.lang.StringBuilder;
 
 public class NamedEntityRecognizer {
-
-    private final double threshold = 1.0/10.0;
-    private final String writer_name = "ner_out.txt";
+    private PropertiesReader propertiesReader = PropertiesReader.getInstance();
+    private final double threshold = Double.parseDouble(propertiesReader.getValue("THRESHOLD"));
+    private final String writer_name = propertiesReader.getValue("WRITER_FILE_NAME");
 
     private SimpleScraperService scraperService = new SimpleScraperService();
     private static DataGetter dataGetter = new DataGetter();
