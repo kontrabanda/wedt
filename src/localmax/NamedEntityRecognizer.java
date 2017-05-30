@@ -12,8 +12,7 @@ import java.lang.StringBuilder;
 
 public class NamedEntityRecognizer {
 
-    private final double threshold = 1.0/70.0;
-    private final String writer_path = "/home/piotrek";
+    private final double threshold = 1.0/10.0;
     private final String writer_name = "ner_out.txt";
 
     private SimpleScraperService scraperService = new SimpleScraperService();
@@ -66,7 +65,7 @@ public class NamedEntityRecognizer {
 
             FileWriter fileWriter = new FileWriter();
             FileWriterData fwd = new FileWriterData();
-            fwd.path = writer_path;
+            fwd.path = fileReaderData.dirPath+"/../";
             fwd.filename = writer_name;
             StringBuilder out = new StringBuilder();
 
